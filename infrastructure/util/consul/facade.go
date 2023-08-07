@@ -18,7 +18,11 @@ type RegistryI interface {
 	// GetServices return All known service IDs.
 	GetServices() ([]string, error)
 
-	GetGRPCInstanceConn(service InstanceI) (*grpc.ClientConn, error)
+	// GetGRPCConnByInstance return a grpc.ClientConn ptr by InstanceI
+	GetGRPCConnByInstance(service InstanceI) (*grpc.ClientConn, error)
+
+	// GetGRPCHealthConn randomly return a grpc.ClientConn ptr
+	GetGRPCHealthConn(serviceName string, tags ...string) (*grpc.ClientConn, error)
 }
 
 type InstanceI interface {
