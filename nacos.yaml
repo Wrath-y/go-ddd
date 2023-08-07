@@ -1,0 +1,12 @@
+# 发布不同的环境会获取对应命名空间下的文件(创建不同的环境的配置,建议data_id, group 配置一致)
+dev: #  nacos namespace(命名空间)
+  data_id: api_conf.yaml  # nacos上的data id(文件名)
+  group: project       # nacos group(组名)
+
+testing: #  nacos namespace(命名空间)
+  data_id: api_conf.yaml  # nacos上的data id(文件名)
+  group: project       # nacos group(组名)
+
+production:
+  data_id: api_conf.yaml  # nacos上的data id(文件名)
+  group: project       # nacos group(组名)

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "./;proto";
+
+service Article {
+  rpc GetById (GetByIdReq) returns (Response) {}
+}
+
+message GetByIdReq {
+  int64 id = 1;
+}
+
+message Response {
+    int32 code = 1;
+    string msg = 2;
+    string data = 3;
+}
