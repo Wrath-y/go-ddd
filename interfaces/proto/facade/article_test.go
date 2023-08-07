@@ -2,18 +2,24 @@ package facade
 
 import (
 	"context"
+	"github.com/spf13/viper"
+	"go-ddd/infrastructure/util/consul"
 	"go-ddd/interfaces/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"log"
 	"testing"
 	"time"
 )
 
 func TestFindAll(t *testing.T) {
-	conn, err := grpc.Dial("127.0.0.1:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		t.Error(err.Error())
+	viper.SetConfigName("conf")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("../../../")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatal(err)
 	}
+	consul.Setup()
+
+	conn, err := consul.Client.GetGRPCHealthConn("article")
 	defer conn.Close()
 
 	var grpcClient proto.ArticleClient
@@ -22,9 +28,8 @@ func TestFindAll(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
 	defer cancel()
 
-	r, err := grpcClient.FindById(ctx, &proto.FindByIdReq{
-		Id:   0,
-		Size: 1,
+	r, err := grpcClient.GetById(ctx, &proto.GetByIdReq{
+		Id: 27,
 	})
 	if err != nil {
 		t.Error(err.Error())
