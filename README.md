@@ -1,4 +1,4 @@
-# 使用DDD设计思想的项目基础结构
+# 使用DDD架构的项目模板
 
 ## 运行本项目
 #### 第一步
@@ -20,7 +20,7 @@ protoc --go_out=plugins=grpc:interfaces/proto interfaces/proto/*.proto
 
 ## 目录说明
 
-### 各层目录结构
+### DDD属于松散的分层架构，每层职责和作用如下
 
 #### 1、用户接口层
 Interfaces 的代码目录结构有：assembler、dto 和 façade 三类
