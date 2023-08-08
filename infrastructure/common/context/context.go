@@ -10,7 +10,7 @@ const Ctx = "__context__"
 
 type Context struct {
 	context.Context
-	*logging.Logger
+	Logger logging.LoggerI
 }
 
 func NewContext(ctx context.Context) *Context {

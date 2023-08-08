@@ -36,7 +36,7 @@ func UnaryLogger() grpc.UnaryServerInterceptor {
 
 		rawKB := len(raw) / 1024 // => to KB
 		if rawKB > bodyLimitKB {
-			c.Info("接口请求与响应", string(raw[:1024]), nil)
+			c.Logger.Info("接口请求与响应", string(raw[:1024]), nil)
 			return nil, errcode.BlogBodyTooLarge.WithDetail(fmt.Sprintf("消息限制%dKB, 本消息%dKB", bodyLimitKB, rawKB))
 		}
 
@@ -49,7 +49,7 @@ func UnaryLogger() grpc.UnaryServerInterceptor {
 				"metadata": md,
 				"body":     string(raw),
 			}
-			c.Info("接口请求与响应", request, string(out), logging.AttrOption{StartTime: &start})
+			c.Logger.Info("接口请求与响应", request, string(out), logging.AttrOption{StartTime: &start})
 		}()
 
 		return handler(c, req)
