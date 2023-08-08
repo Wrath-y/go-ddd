@@ -2,9 +2,12 @@ package facade
 
 import (
 	"context"
+	"fmt"
 	"github.com/spf13/viper"
 	"go-ddd/infrastructure/util/consul"
 	"go-ddd/interfaces/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"testing"
 	"time"
@@ -19,7 +22,12 @@ func TestFindAll(t *testing.T) {
 	}
 	consul.Setup()
 
-	conn, err := consul.Client.GetGRPCHealthConn("article")
+	instance, err := consul.Client.GetHealthRandomInstance("article")
+
+	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", instance.GetAddress(), instance.GetPort(), grpc.WithTransportCredentials(insecure.NewCredentials())))
+	if err != nil {
+		t.Error(err.Error())
+	}
 	defer conn.Close()
 
 	var grpcClient proto.ArticleClient

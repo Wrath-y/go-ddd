@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/hashicorp/consul/api"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"math/rand"
 	"time"
 )
@@ -139,16 +137,7 @@ func (c *consulServiceRegistry) GetServices() ([]string, error) {
 	return result, nil
 }
 
-func (c *consulServiceRegistry) GetGRPCConnByInstance(service InstanceI) (*grpc.ClientConn, error) {
-	// 添加grpc.WithBlock()来等连接建立完再返回，否则会默认使用协程异步创建conn。
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", service.GetAddress(), service.GetPort()), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	return conn, err
-}
-
-func (c *consulServiceRegistry) GetGRPCHealthConn(serviceName string, tags ...string) (*grpc.ClientConn, error) {
+func (c *consulServiceRegistry) GetHealthRandomInstance(serviceName string, tags ...string) (InstanceI, error) {
 	serviceEntries, _, err := c.client.Health().ServiceMultipleTags(serviceName, tags, false, nil)
 	if err != nil {
 		return nil, err
@@ -160,11 +149,10 @@ func (c *consulServiceRegistry) GetGRPCHealthConn(serviceName string, tags ...st
 	rand.New(rand.NewSource(time.Now().UnixNano()))
 	srv := serviceEntries[rand.Intn(len(serviceEntries))]
 
-	// 添加grpc.WithBlock()来等连接建立完再返回，否则会默认使用协程异步创建conn。
-	conn, err := grpc.Dial(fmt.Sprintf("%s:%d", srv.Service.Address, srv.Service.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-
-	return conn, err
+	return instance{
+		InstanceId: srv.Service.ID,
+		Address:    srv.Service.Address,
+		Port:       srv.Service.Port,
+		Metadata:   srv.Service.Meta,
+	}, nil
 }

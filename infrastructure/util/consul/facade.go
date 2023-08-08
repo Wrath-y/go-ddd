@@ -2,7 +2,6 @@ package consul
 
 import (
 	"github.com/spf13/viper"
-	"google.golang.org/grpc"
 	"log"
 )
 
@@ -18,11 +17,8 @@ type RegistryI interface {
 	// GetServices return All known service IDs.
 	GetServices() ([]string, error)
 
-	// GetGRPCConnByInstance return a grpc.ClientConn ptr by InstanceI
-	GetGRPCConnByInstance(service InstanceI) (*grpc.ClientConn, error)
-
-	// GetGRPCHealthConn randomly return a grpc.ClientConn ptr
-	GetGRPCHealthConn(serviceName string, tags ...string) (*grpc.ClientConn, error)
+	// GetHealthRandomInstance Get a random instance
+	GetHealthRandomInstance(serviceName string, tags ...string) (InstanceI, error)
 }
 
 type InstanceI interface {
@@ -49,17 +45,13 @@ type InstanceI interface {
 	GetMetadata() map[string]string
 }
 
-type Registry struct {
-	RegistryI
-}
-
-var Client *Registry
+var Client RegistryI
 
 func Setup() {
 	Client = newConsulClient("default")
 }
 
-func newConsulClient(store string) *Registry {
+func newConsulClient(store string) RegistryI {
 	cfg := viper.Sub("consul." + store)
 	if cfg == nil {
 		log.Fatal("consul config is nil: ", store)
@@ -70,8 +62,7 @@ func newConsulClient(store string) *Registry {
 	}
 
 	var err error
-	Client = new(Registry)
-	Client.RegistryI, err = newConsulServiceRegistry(address, "")
+	Client, err = newConsulServiceRegistry(address, "")
 	if err != nil {
 		log.Fatal("consul client request failed: ", err)
 	}
