@@ -68,24 +68,21 @@ Infrastructure 的代码目录结构有：config 和 util 两个子目录
 
 用户接口层
 
-Assembler ：将 CustomerDTO 转换为 CustomerEntity
-Dto：接收请求传入的数据 CustomerDTO
-Facade：调用应用层创建用户方法
+- Assembler ：将 CustomerDTO 转换为 CustomerEntity
+- Dto：接收请求传入的数据 CustomerDTO
+- Facade：调用应用层创建用户方法
+
 应用层
 
-Event：发布用户创建事件给其它微服务
-Service：
-内部服务 -> 创建用户
-外部服务 -> 创建日志
+- Event：发布用户创建事件给其它微服务
+- Service：
+  - 内部服务 -> 创建用户
+  - 外部服务 -> 创建日志
+
 领域层
 
-Aggregate：进入用户聚合目录下(如：CustomerAggregate)
-
-Entity：用户聚合跟
-
-Event：创建用户事件
-
-Service：具体的创建用户逻辑，比如用户是否重复校验，分配初始密码等
-
-Repository：将用户信息保存到数据库
-
+- Aggregate：进入用户聚合目录下(如：CustomerAggregate)
+- Entity：用户聚合跟
+- Event：创建用户事件
+- Service：具体的创建用户逻辑，比如用户是否重复校验，分配初始密码等
+- Repository：将用户信息保存到数据库
